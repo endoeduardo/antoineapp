@@ -1,4 +1,5 @@
 #Antoine Calculator app
+
 An app to calculate the saturation pressure and saturation temperature with Antoine's equation.
 
 On the main window you can search by compound name or formula. After clicking the search button the user will be 
