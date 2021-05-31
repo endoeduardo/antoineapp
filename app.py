@@ -1,4 +1,4 @@
-from frames.main_frames import App
+from frames import App
 
 app = App()
 
