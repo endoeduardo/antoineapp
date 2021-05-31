@@ -4,13 +4,15 @@ import pandas as pd
 
 
 class App(tk.Tk):
+    """The main root of the app, it also stores some constants used in the Antoine's equation"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.geometry('600x400')
-        self.title('Antoine Appzonha')
+        self.title('Antoine App')
         self.columnconfigure(0, weight=1)
         self.antoine_table = pd.read_csv('assets/antoine_list_df.csv', index_col=0)
 
+        #Initialing some constants and vars
         self.compound = tk.StringVar()
         self.compound.set('Water')
         self.compound_formula = tk.StringVar()
@@ -27,6 +29,7 @@ class App(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
         container.grid_rowconfigure(0, weight=1)
 
+        #Creating the command to switch the windows of the app
         self.frames = {}
         for F in (AntoineFrame, MainWindow):
             page_name = F.__name__
@@ -40,15 +43,19 @@ class App(tk.Tk):
         self.bind("<BackSpace>", lambda x: self.show_frame('MainWindow'))
 
     def show_frame(self, page_name):
+        """It shows the frame that it is called by raising it"""
         frame = self.frames[page_name]
         frame.tkraise()
 
     def update(self):
+        """Updates the constants and the labels of the AntoineFrame for the
+        values entered by the user in the main window"""
         self.frames['AntoineFrame'].update_constants(controller=self)
         self.frames['AntoineFrame'].update_frames(controller=self)
 
 
 class MainWindow(ttk.Frame):
+    """Main Window where the user search for the compound by name or formula"""
     def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
         self.controller = controller
@@ -72,6 +79,8 @@ class MainWindow(ttk.Frame):
         search_button.grid(row=2, column=0, columnspan=2, pady=(20, 20))
 
     def search(self, controller):
+        """It searches for the compound requested by the user, then updates the App frame to
+        update the values showed on the Labels in the AntoineFrame"""
         self.controller.show_frame('AntoineFrame')
         compound_name = controller.compound.get()
         compound_name = compound_name.lower()
@@ -90,6 +99,7 @@ class MainWindow(ttk.Frame):
 
 
 class AntoineFrame(ttk.Frame):
+    """The calculator window, here the user enter a value to calculate the saturation temperature or pressure"""
     def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
         self.columnconfigure(0, weight=1)
@@ -121,12 +131,14 @@ class AntoineFrame(ttk.Frame):
         back_button.grid(row=5, column=0, columnspan=2, pady=(10, 10))
 
     def update_frames(self, controller):
+        """Updates the labels and constant values"""
         self.update_constants(controller)
 
         self.compound_tag.update(controller)
         self.constants_frame.update(self)
 
     def update_constants(self, controller):
+        """it passes the values searched in the main window"""
         self.A = controller.A
         self.B = controller.B
         self.C = controller.C
