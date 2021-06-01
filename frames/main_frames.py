@@ -15,6 +15,8 @@ class App(tk.Tk):
         #Initialing some constants and vars
         self.compound = tk.StringVar()
         self.compound.set('Water')
+        self.compound_name = tk.StringVar()
+        self.compound_name.set('Water')
         self.compound_formula = tk.StringVar()
         self.compound_formula.set('H2O')
 
@@ -82,11 +84,20 @@ class MainWindow(ttk.Frame):
         """It searches for the compound requested by the user, then updates the App frame to
         update the values showed on the Labels in the AntoineFrame"""
         self.controller.show_frame('AntoineFrame')
+        self.search_option = 'Compound Formula'
+
+        if self.search_option == 'Compound Name':
+            self.search_by_name(controller)
+        else:
+            self.search_by_formula(controller)
+            controller.update()
+
+    def search_by_name(self, controller):
         compound_name = controller.compound.get()
         compound_name = compound_name.lower()
         obj = controller.antoine_table.loc[controller.antoine_table['Composto'] == compound_name]
 
-        controller.compound.set(compound_name.capitalize())
+        controller.compound_name.set(compound_name.capitalize())
 
         controller.A = obj['Ant (A)'].values[0]
         controller.B = obj['Ant (B)'].values[0]
@@ -95,7 +106,19 @@ class MainWindow(ttk.Frame):
         controller.min = obj['Min'].values[0]
         controller.compound_formula.set(obj['Formula'].values[0])
 
-        controller.update()
+    def search_by_formula(self, controller):
+        compound_formula = controller.compound.get()
+        compound_formula = compound_formula.upper()
+        obj = controller.antoine_table.loc[controller.antoine_table['Formula'] == compound_formula]
+        controller.compound.set(compound_formula)
+
+        controller.A = obj['Ant (A)'].values[0]
+        controller.B = obj['Ant (B)'].values[0]
+        controller.C = obj['Ant (C)'].values[0]
+        controller.max = obj['Max'].values[0]
+        controller.min = obj['Min'].values[0]
+        controller.compound_name.set(obj['Composto'].values[0].capitalize())
+        controller.compound_formula.set(compound_formula)
 
 
 class AntoineFrame(ttk.Frame):
