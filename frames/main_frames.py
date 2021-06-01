@@ -14,7 +14,7 @@ class App(tk.Tk):
 
         #Initialing some constants and vars
         self.compound = tk.StringVar()
-        self.compound.set('Water')
+        self.compound.set('Oxygen')
         self.compound_name = tk.StringVar()
         self.compound_name.set('Water')
         self.compound_formula = tk.StringVar()
