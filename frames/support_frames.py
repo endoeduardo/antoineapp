@@ -35,12 +35,12 @@ class CompoundTag(ttk.Frame):
 
 class ConstantsFrame(ttk.Frame):
     """Visual information of the Antoine's equation constants"""
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
         self.a_v = tk.StringVar()
         self.b_v = tk.StringVar()
         self.c_v = tk.StringVar()
-        self.update(parent)
+        self.update(controller)
 
         a_label = ttk.Label(self, text='A=')
         b_label = ttk.Label(self, text='B=')
@@ -55,11 +55,11 @@ class ConstantsFrame(ttk.Frame):
         b_value.grid(row=0, column=3, padx=(0, 10))
         c_value.grid(row=0, column=5, padx=(0, 10))
 
-    def update(self, parent):
+    def update(self, controller):
         """Updates the values of the antoine's constants"""
-        self.a_v.set(parent.A)
-        self.b_v.set(parent.B)
-        self.c_v.set(parent.C)
+        self.a_v.set(controller.A)
+        self.b_v.set(controller.B)
+        self.c_v.set(controller.C)
 
 
 class InformationFrame(ttk.Frame):
@@ -74,7 +74,7 @@ class InformationFrame(ttk.Frame):
 
 class EntryTab(ttk.Frame):
     """Where the user enter a value to calculate the pressure and temperature"""
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
         self.p_value = tk.StringVar()
         self.p_value.set('760')
@@ -96,8 +96,8 @@ class EntryTab(ttk.Frame):
         p_output = ttk.Entry(self, width=10, textvariable=self.p_out)
         t_output = ttk.Entry(self, width=10, textvariable=self.t_out)
 
-        t_calculate = ttk.Button(self, text='Calculate', command=lambda: self.antoine_t(parent))
-        p_calculate = ttk.Button(self, text='Calculate', command=lambda: self.antoine_p(parent))
+        t_calculate = ttk.Button(self, text='Calculate', command=lambda: self.antoine_t(controller))
+        p_calculate = ttk.Button(self, text='Calculate', command=lambda: self.antoine_p(controller))
 
         p_entry_label.grid(row=0, column=0)
         p_input.grid(row=0, column=1)
@@ -111,20 +111,20 @@ class EntryTab(ttk.Frame):
         p_output.grid(row=1, column=3)
         p_calculate.grid(row=1, column=4, padx=(10, 10))
 
-    def antoine_p(self, parent):
+    def antoine_p(self, controller):
         """It receives a temperature and calculates the saturation pressure"""
-        A = float(parent.A.replace(',', '.'))
-        B = float(parent.B.replace(',', '.'))
-        C = float(parent.C.replace(',', '.'))
+        A = float(controller.A.replace(',', '.'))
+        B = float(controller.B.replace(',', '.'))
+        C = float(controller.C.replace(',', '.'))
         T = float(self.t_value.get())
         pressure = f'{np.exp(A - B / (C + T)):.3f}'
         self.p_out.set(pressure)
 
-    def antoine_t(self, parent):
+    def antoine_t(self, controller):
         """It receives a pressure and returns the saturation temperature"""
-        A = float(parent.A.replace(',', '.'))
-        B = float(parent.B.replace(',', '.'))
-        C = float(parent.C.replace(',', '.'))
+        A = float(controller.A.replace(',', '.'))
+        B = float(controller.B.replace(',', '.'))
+        C = float(controller.C.replace(',', '.'))
         P = float(self.p_value.get())
         temperature = f'{B / (A - np.log(P)) - C:.3f}'
         self.t_out.set(temperature)

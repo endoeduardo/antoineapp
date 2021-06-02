@@ -14,15 +14,13 @@ class App(tk.Tk):
 
         #Initialing some constants and vars
         self.compound = tk.StringVar()
-        self.compound.set('Oxygen')
+        self.compound.set('Water')
         self.compound_name = tk.StringVar()
-        self.compound_name.set('Water')
         self.compound_formula = tk.StringVar()
-        self.compound_formula.set('H2O')
 
-        self.A = 18.3036
-        self.B = 3816.44
-        self.C = -46.13
+        self.A = 0
+        self.B = 0
+        self.C = 0
         self.max = 0
         self.min = 0
 
@@ -52,7 +50,6 @@ class App(tk.Tk):
     def update(self):
         """Updates the constants and the labels of the AntoineFrame for the
         values entered by the user in the main window"""
-        self.frames['AntoineFrame'].update_constants(controller=self)
         self.frames['AntoineFrame'].update_frames(controller=self)
 
 
@@ -85,42 +82,35 @@ class MainWindow(ttk.Frame):
         """It searches for the compound requested by the user, then updates the App frame to
         update the values showed on the Labels in the AntoineFrame"""
         self.controller.show_frame('AntoineFrame')
-        self.search_option = self.compound_box.get()
-        if self.search_option == 'Compound Name':
-            self.search_by_name(controller)
+        search_option = self.compound_box.get()
+        if search_option == 'Compound Name':
+            self.search_compound(controller, 'Composto')
             controller.update()
         else:
-            self.search_by_formula(controller)
+            self.search_compound(controller, 'Formula')
             controller.update()
 
-
-    def search_by_name(self, controller):
-        compound_name = controller.compound.get()
-        compound_name = compound_name.lower()
-        obj = controller.antoine_table.loc[controller.antoine_table['Composto'] == compound_name]
-
-        controller.compound_name.set(compound_name.capitalize())
-
-        controller.A = obj['Ant (A)'].values[0]
-        controller.B = obj['Ant (B)'].values[0]
-        controller.C = obj['Ant (C)'].values[0]
-        controller.max = obj['Max'].values[0]
-        controller.min = obj['Min'].values[0]
-        controller.compound_formula.set(obj['Formula'].values[0])
-
-    def search_by_formula(self, controller):
-        compound_formula = controller.compound.get()
-        compound_formula = compound_formula.upper()
-        obj = controller.antoine_table.loc[controller.antoine_table['Formula'] == compound_formula]
-        controller.compound.set(compound_formula)
+    @staticmethod
+    def search_compound(controller, n):
+        if n == 'Composto':
+            compound_name = controller.compound.get()
+            compound_name = compound_name.lower()
+            obj = controller.antoine_table.loc[controller.antoine_table[n] == compound_name]
+            controller.compound_name.set(compound_name.capitalize())
+            controller.compound_formula.set(obj['Formula'].values[0])
+        else:
+            compound_formula = controller.compound.get()
+            compound_formula = compound_formula.upper()
+            obj = controller.antoine_table.loc[controller.antoine_table[n] == compound_formula]
+            controller.compound.set(compound_formula)
+            controller.compound_formula.set(compound_formula)
+            controller.compound_name.set(obj['Composto'].values[0].capitalize())
 
         controller.A = obj['Ant (A)'].values[0]
         controller.B = obj['Ant (B)'].values[0]
         controller.C = obj['Ant (C)'].values[0]
         controller.max = obj['Max'].values[0]
         controller.min = obj['Min'].values[0]
-        controller.compound_name.set(obj['Composto'].values[0].capitalize())
-        controller.compound_formula.set(compound_formula)
 
 
 class AntoineFrame(ttk.Frame):
@@ -129,7 +119,6 @@ class AntoineFrame(ttk.Frame):
         super().__init__(parent, **kwargs)
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
-        self.update_constants(controller)
 
         self.compound_tag = CompoundTag(self, controller)
         self.compound_tag.grid(row=1, column=0, columnspan=2, sticky='EW')
@@ -141,13 +130,13 @@ class AntoineFrame(ttk.Frame):
         equation_label.image = equation_photo
         equation_label.grid(row=0, column=0, columnspan=2, pady=(30, 30))
 
-        self.constants_frame = ConstantsFrame(self)
+        self.constants_frame = ConstantsFrame(self, controller)
         self.constants_frame.grid(row=2, column=0, columnspan=2)
 
         information_frame = InformationFrame(self)
         information_frame.grid(row=3, column=0, columnspan=2)
 
-        entry_frame = EntryTab(self)
+        entry_frame = EntryTab(self, controller)
         entry_frame.grid(row=4, column=0, columnspan=2)
 
         back_button = ttk.Button(self,
@@ -157,18 +146,9 @@ class AntoineFrame(ttk.Frame):
 
     def update_frames(self, controller):
         """Updates the labels and constant values"""
-        self.update_constants(controller)
-
         self.compound_tag.update(controller)
-        self.constants_frame.update(self)
+        self.constants_frame.update(controller)
 
-    def update_constants(self, controller):
-        """it passes the values searched in the main window"""
-        self.A = controller.A
-        self.B = controller.B
-        self.C = controller.C
-        self.max = controller.max
-        self.min = controller.min
 
 
 
