@@ -72,6 +72,7 @@ class MainWindow(ttk.Frame):
             state='readonly',
             values=['Compound Name', 'Compound Formula']
         )
+        self.compound_box.current(0)
         self.compound_box.grid(row=1, column=0, sticky='EW', padx=(25, 10))
 
         self.input_search = ttk.Entry(self, textvariable=controller.compound)
@@ -84,13 +85,14 @@ class MainWindow(ttk.Frame):
         """It searches for the compound requested by the user, then updates the App frame to
         update the values showed on the Labels in the AntoineFrame"""
         self.controller.show_frame('AntoineFrame')
-        self.search_option = 'Compound Formula'
-
+        self.search_option = self.compound_box.get()
         if self.search_option == 'Compound Name':
             self.search_by_name(controller)
+            controller.update()
         else:
             self.search_by_formula(controller)
             controller.update()
+
 
     def search_by_name(self, controller):
         compound_name = controller.compound.get()
