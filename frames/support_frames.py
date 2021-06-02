@@ -27,7 +27,7 @@ class CompoundTag(ttk.Frame):
 
     def update(self, controller):
         """Updates the labels"""
-        self.c_name.set('Name: ' + controller.compound.get())
+        self.c_name.set('Name: ' + controller.compound_name.get())
         self.c_formula.set('Formula: ' + controller.compound_formula.get())
         self.max.set('Max: ' + str(controller.max))
         self.min.set('Min: ' + str(controller.min))
