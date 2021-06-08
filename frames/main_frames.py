@@ -31,7 +31,7 @@ class App(tk.Tk):
 
         #Creating the command to switch the windows of the app
         self.frames = {}
-        for F in (AntoineFrame, MainWindow):
+        for F in (AntoineFrame, MainWindow, NotFoundWindow):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -83,12 +83,15 @@ class MainWindow(ttk.Frame):
         update the values showed on the Labels in the AntoineFrame"""
         self.controller.show_frame('AntoineFrame')
         search_option = self.compound_box.get()
-        if search_option == 'Compound Name':
-            self.search_compound(controller, 'Composto')
-            controller.update()
-        else:
-            self.search_compound(controller, 'Formula')
-            controller.update()
+        try:
+            if search_option == 'Compound Name':
+                self.search_compound(controller, 'Composto')
+                controller.update()
+            else:
+                self.search_compound(controller, 'Formula')
+                controller.update()
+        except IndexError:
+            self.controller.show_frame('NotFoundWindow')
 
     @staticmethod
     def search_compound(controller, n):
@@ -150,6 +153,18 @@ class AntoineFrame(ttk.Frame):
         self.constants_frame.update(controller)
 
 
+class NotFoundWindow(ttk.Frame):
+    def __init__(self, parent, controller, *args, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        self.label = ttk.Label(self, text='Could not found your compound')
+        self.label.configure(anchor='center')
+        self.label.grid(row=0, column=0, sticky='NSEW')
+
+        self.button = ttk.Button(self, text='Back', command=lambda: controller.show_frame('MainWindow'))
+        self.button.grid(row=1, column=0)
 
 
 
