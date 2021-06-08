@@ -1,13 +1,52 @@
 from .support_frames import *
 from PIL import Image, ImageTk
 import pandas as pd
+from tkinter import ttk
+import tkinter as tk
+
+COLOR_PRIMARY = '#2e3f4f'
+COLOR_SECONDARY = '#293846'
+COLOR_LIGHT_BACKGROUND = '#fff'
+COLOR_LIGHT_TEXT = '#eee'
+COLOR_DARK_TEXT = '#8095a8'
 
 
 class App(tk.Tk):
     """The main root of the app, it also stores some constants used in the Antoine's equation"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.geometry('600x400')
+        #Creating a style
+        style = ttk.Style(self)
+        style.theme_use('clam')
+
+        style.configure('App.TFrame', background=COLOR_LIGHT_BACKGROUND)
+        style.configure('Background.TFrame', background=COLOR_PRIMARY)
+        style.configure(
+            'AppText.TLabel', background=COLOR_PRIMARY,
+            foreground=COLOR_LIGHT_TEXT,
+            font='Arial 11'
+        )
+        style.configure(
+            'NotFoundText.TLabel',
+            background=COLOR_PRIMARY,
+            foreground=COLOR_LIGHT_TEXT,
+            font='Arial 20'
+            )
+        style.configure(
+            'AppButton.TButton',
+            background=COLOR_SECONDARY,
+            foreground=COLOR_LIGHT_TEXT
+        )
+        #Enables the hoff-over mouse
+        style.map(
+            'AppButton.TButton',
+            background=[('active', COLOR_PRIMARY), ('disabled', COLOR_SECONDARY)]
+        )
+
+        self['background'] = COLOR_PRIMARY
+
+        #App settings
+        self.geometry('400x300')
         self.title('Antoine App')
         self.columnconfigure(0, weight=1)
         self.antoine_table = pd.read_csv('assets/antoine_list_df.csv', index_col=0)
@@ -40,7 +79,6 @@ class App(tk.Tk):
         self.show_frame('MainWindow')
 
         self.bind('<Return>', lambda x: self.frames['MainWindow'].search(self))
-        self.bind("<BackSpace>", lambda x: self.show_frame('MainWindow'))
 
     def show_frame(self, page_name):
         """It shows the frame that it is called by raising it"""
@@ -57,11 +95,17 @@ class MainWindow(ttk.Frame):
     """Main Window where the user search for the compound by name or formula"""
     def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
+        self['style'] = 'Background.TFrame'
         self.controller = controller
         self.option = tk.StringVar()
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
 
-        compound_label = ttk.Label(self, text='Search by:')
-        compound_label.grid(row=0, column=0)
+        compound_label = ttk.Label(self, text='Search by:', style='AppText.TLabel', justify='right')
+        compound_label.grid(row=0, column=0, sticky='EW')
 
         self.compound_box = ttk.Combobox(
             self,
@@ -70,13 +114,15 @@ class MainWindow(ttk.Frame):
             values=['Compound Name', 'Compound Formula']
         )
         self.compound_box.current(0)
-        self.compound_box.grid(row=1, column=0, sticky='EW', padx=(25, 10))
+        self.compound_box.grid(row=0, column=1, sticky='EW', padx=(0, 10))
 
         self.input_search = ttk.Entry(self, textvariable=controller.compound)
-        self.input_search.grid(row=1, column=1, sticky='EW', padx=(0, 25))
+        self.input_search.grid(row=0, column=2, sticky='EW', padx=(0, 25))
 
-        search_button = ttk.Button(self, text='Search', command=lambda: self.search(controller=controller))
-        search_button.grid(row=2, column=0, columnspan=2, pady=(20, 20))
+        search_button = ttk.Button(self, text='Search',
+                                   style='AppButton.TButton',
+                                   command=lambda: self.search(controller=controller))
+        search_button.grid(row=2, column=0, columnspan=3, pady=(20, 20), sticky='s')
 
     def search(self, controller):
         """It searches for the compound requested by the user, then updates the App frame to
@@ -120,6 +166,7 @@ class AntoineFrame(ttk.Frame):
     """The calculator window, here the user enter a value to calculate the saturation temperature or pressure"""
     def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
+        self['style'] = 'Background.TFrame'
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
@@ -144,6 +191,7 @@ class AntoineFrame(ttk.Frame):
 
         back_button = ttk.Button(self,
                                  text='Back',
+                                 style='AppButton.TButton',
                                  command=lambda: controller.show_frame('MainWindow'))
         back_button.grid(row=5, column=0, columnspan=2, pady=(10, 10))
 
@@ -154,17 +202,22 @@ class AntoineFrame(ttk.Frame):
 
 
 class NotFoundWindow(ttk.Frame):
+    """Window which returns a not found message"""
     def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
+        self['style'] = 'Background.TFrame'
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-        self.label = ttk.Label(self, text='Could not found your compound')
+        self.label = ttk.Label(self,
+                               text='Could not found your compound!\n'
+                                    'Please try again!',
+                               justify='center',
+                               style='NotFoundText.TLabel')
         self.label.configure(anchor='center')
         self.label.grid(row=0, column=0, sticky='NSEW')
 
-        self.button = ttk.Button(self, text='Back', command=lambda: controller.show_frame('MainWindow'))
+        self.button = ttk.Button(self, text='Back',
+                                 style='AppButton.TButton',
+                                 command=lambda: controller.show_frame('MainWindow'))
         self.button.grid(row=1, column=0)
-
-
-

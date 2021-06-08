@@ -7,6 +7,7 @@ class CompoundTag(ttk.Frame):
     """It is the visual information of the compound name, formula, max and min temperatures"""
     def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent)
+        self['style'] = 'Background.TFrame'
         self.c_name = tk.StringVar()
         self.c_formula = tk.StringVar()
         self.max = tk.StringVar()
@@ -14,14 +15,20 @@ class CompoundTag(ttk.Frame):
 
         self.update(controller)
 
-        compound_name = ttk.Label(self, textvariable=self.c_name)
+        compound_name = ttk.Label(self,
+                                  textvariable=self.c_name,
+                                  style='AppText.TLabel'
+                                  )
         compound_name.grid(row=0, column=0, sticky='W', padx=(10, 10))
 
-        compound_formula = ttk.Label(self, textvariable=self.c_formula)
+        compound_formula = ttk.Label(self,
+                                     textvariable=self.c_formula,
+                                     style='AppText.TLabel'
+                                     )
         compound_formula.grid(row=0, column=1, sticky='W', padx=(10, 10))
 
-        max_display = ttk.Label(self, textvariable=self.max)
-        min_display = ttk.Label(self, textvariable=self.min)
+        max_display = ttk.Label(self, textvariable=self.max, style='AppText.TLabel')
+        min_display = ttk.Label(self, textvariable=self.min, style='AppText.TLabel')
         max_display.grid(row=0, column=2, sticky='E', padx=(10, 10))
         min_display.grid(row=0, column=3, sticky='E', padx=(10, 10))
 
@@ -37,17 +44,18 @@ class ConstantsFrame(ttk.Frame):
     """Visual information of the Antoine's equation constants"""
     def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
+        self['style']='Background.TFrame'
         self.a_v = tk.StringVar()
         self.b_v = tk.StringVar()
         self.c_v = tk.StringVar()
         self.update(controller)
 
-        a_label = ttk.Label(self, text='A=')
-        b_label = ttk.Label(self, text='B=')
-        c_label = ttk.Label(self, text='C=')
-        a_value = ttk.Label(self, textvariable=self.a_v)
-        b_value = ttk.Label(self, textvariable=self.b_v)
-        c_value = ttk.Label(self, textvariable=self.c_v)
+        a_label = ttk.Label(self, text='A=', style='AppText.TLabel')
+        b_label = ttk.Label(self, text='B=', style='AppText.TLabel')
+        c_label = ttk.Label(self, text='C=', style='AppText.TLabel')
+        a_value = ttk.Label(self, textvariable=self.a_v, style='AppText.TLabel')
+        b_value = ttk.Label(self, textvariable=self.b_v, style='AppText.TLabel')
+        c_value = ttk.Label(self, textvariable=self.c_v, style='AppText.TLabel')
         a_label.grid(row=0, column=0)
         b_label.grid(row=0, column=2)
         c_label.grid(row=0, column=4)
@@ -66,8 +74,9 @@ class InformationFrame(ttk.Frame):
     """Info of the units used in the equation"""
     def __init__(self, container, *args, **kwargs):
         super().__init__(container, **kwargs)
-        pressure_label = ttk.Label(self, text='P=Pressure (mmHg)')
-        temperature_label = ttk.Label(self, text='T=Temperature (K)')
+        self['style']='Background.TFrame'
+        pressure_label = ttk.Label(self, text='P=Pressure (mmHg)', style='AppText.TLabel')
+        temperature_label = ttk.Label(self, text='T=Temperature (K)', style='AppText.TLabel')
         pressure_label.grid(row=1, column=0)
         temperature_label.grid(row=1, column=1)
 
@@ -76,6 +85,7 @@ class EntryTab(ttk.Frame):
     """Where the user enter a value to calculate the pressure and temperature"""
     def __init__(self, parent, controller, *args, **kwargs):
         super().__init__(parent, **kwargs)
+        self['style']='Background.TFrame'
         self.p_value = tk.StringVar()
         self.p_value.set('760')
         self.t_value = tk.StringVar()
@@ -85,19 +95,23 @@ class EntryTab(ttk.Frame):
         self.p_out.set('---')
         self.t_out = tk.StringVar()
         self.t_out.set('---')
-        p_entry_label = ttk.Label(self, text='P')
-        t_entry_label = ttk.Label(self, text='T')
+        p_entry_label = ttk.Label(self, text='P', style='AppText.TLabel')
+        t_entry_label = ttk.Label(self, text='T', style='AppText.TLabel')
 
         p_input = ttk.Entry(self, width=10, textvariable=self.p_value)
         t_input = ttk.Entry(self, width=10, textvariable=self.t_value)
-        t_label = ttk.Label(self, text='-->  Tsat =')
-        p_label = ttk.Label(self, text='-->  Psat =')
+        t_label = ttk.Label(self, text='-->  Tsat =', style='AppText.TLabel')
+        p_label = ttk.Label(self, text='-->  Psat =', style='AppText.TLabel')
 
         p_output = ttk.Entry(self, width=10, textvariable=self.p_out)
         t_output = ttk.Entry(self, width=10, textvariable=self.t_out)
 
-        t_calculate = ttk.Button(self, text='Calculate', command=lambda: self.antoine_t(controller))
-        p_calculate = ttk.Button(self, text='Calculate', command=lambda: self.antoine_p(controller))
+        t_calculate = ttk.Button(self,
+                                 text='Calculate',
+                                 command=lambda: self.antoine_t(controller))
+        p_calculate = ttk.Button(self,
+                                 text='Calculate',
+                                 command=lambda: self.antoine_p(controller))
 
         p_entry_label.grid(row=0, column=0)
         p_input.grid(row=0, column=1)
